@@ -3,7 +3,7 @@ import {
     UInt64,
     Experimental
 } from 'o1js';
-import { AccountRegisterRecords } from './Structs';
+import { AccountRegisterRecords } from './Structs/index.js';
 
 const { OffchainState } = Experimental;
 

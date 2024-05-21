@@ -7,7 +7,7 @@ import { AccountMetadata, AccountRewards, LinkedWeb2Accounts, LinkedWeb3Accounts
 
 const { OffchainState } = Experimental;
 
-export const offchainAccountIdentityValuesState = OffchainState({
+export const offchainDSIDGeneralSchemaState = OffchainState({
     metadata: OffchainState.Map(PublicKey, AccountMetadata),
     linkedWeb2Accounts: OffchainState.Map(PublicKey, LinkedWeb2Accounts),
     linkedWeb3Accounts: OffchainState.Map(PublicKey, LinkedWeb3Accounts),
@@ -15,4 +15,4 @@ export const offchainAccountIdentityValuesState = OffchainState({
     trustedAccounts: OffchainState.Map(PublicKey, TrustedWeb3Accounts) 
 });
 
-export class AccountIdentityValuesStateProof extends offchainAccountIdentityValuesState.Proof {}
+export class DSIDGeneralSchemaStateProof extends offchainDSIDGeneralSchemaState.Proof {}

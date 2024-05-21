@@ -1,6 +1,19 @@
 # Mina zkApp: Dsid Mock Up
 
-This template uses TypeScript.
+This repository contains the initial prototype for the DSID Mina demo, the contract will use experimental Offchain storage to deal with registration 
+and update of information for a particular account.
+ 
+# Useful commands for development:
+
+The following list of commands are necessary to successfully configure the development environment and verify the functionality of the project
+
+## Initial setup for this folder
+
+Locate yourself at the root of the folder and then run:
+
+```sh
+npm i
+```
 
 ## How to build
 
@@ -23,4 +36,4 @@ npm run coverage
 
 ## License
 
-[Apache-2.0](LICENSE)
+[THE UNLICENSE](LICENSE)

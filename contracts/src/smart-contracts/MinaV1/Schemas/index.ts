@@ -1,7 +1,12 @@
-import { offchainAccountIdentityValuesState } from "./AccountIdentityValuesSchema";
-import { offchainAccountRegistrationRecordsState } from "./RegisteredAccountsSchema";
+import { AccountIdentityValuesStateProof, offchainAccountIdentityValuesState } from "./AccountIdentityValuesSchema.js";
+import { DSIDGeneralSchemaStateProof, offchainDSIDGeneralSchemaState } from "./GeneralOffChainDSIDSchema.js";
+import { RegisteredAccountsStateProof, offchainAccountRegistrationRecordsState } from "./RegisteredAccountsSchema.js";
 
-export { 
+export {
+    offchainDSIDGeneralSchemaState, 
     offchainAccountIdentityValuesState,
-    offchainAccountRegistrationRecordsState
+    offchainAccountRegistrationRecordsState,
+    DSIDGeneralSchemaStateProof,
+    RegisteredAccountsStateProof,
+    AccountIdentityValuesStateProof
 }
