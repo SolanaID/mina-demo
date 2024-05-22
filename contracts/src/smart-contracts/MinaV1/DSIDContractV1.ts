@@ -1,5 +1,6 @@
-import { Field, SmartContract, state, State, method, Experimental, PublicKey, UInt64, CircuitString } from 'o1js';
+import { Field, SmartContract, state, State, method, Experimental, PublicKey, UInt64, CircuitString, UInt32 } from 'o1js';
 import { offchainDSIDGeneralSchemaState, DSIDGeneralSchemaStateProof } from './Schemas/index.js';
+import { AccountMetadata } from './Schemas/Structs/AccountMetadata.js';
 //import { offchainAccountIdentityValuesState }
 const { OffchainStateCommitments } = Experimental;
 
@@ -31,11 +32,10 @@ export class DSIDContractV1 extends SmartContract {
   async createAccount(address: PublicKey, network: CircuitString) {
     offchainDSIDGeneralSchemaState.fields.metadata.update(address, {
       from: undefined,
-      to: {
-        //It only allows this if networks is of string type even though the definition is circuitstring WTAF???
-        network: network.toString(),
-        metadata: {}
-      }
+      to: new AccountMetadata({
+        network: network,
+        metadata: CircuitString.fromString('')
+      })
     })
 
     offchainDSIDGeneralSchemaState.fields.linkedWeb2Accounts.update(address, {
@@ -69,17 +69,16 @@ export class DSIDContractV1 extends SmartContract {
    */
 
   @method
-  async updateAccountMetadata(address: PublicKey, key: CircuitString, value: CircuitString){
+  async updateAccountMetadata(address: PublicKey, parsedMetadata: CircuitString){
       let originalMetadata =  await offchainDSIDGeneralSchemaState.fields.metadata.get(address);
       let metadataAssertion = originalMetadata.assertSome('Metadata for '+address+' exists');
-      metadataAssertion.addPropertyToMetadata(key.toString(), value.toString()) 
+      metadataAssertion.addPropertyToMetadata(parsedMetadata) 
       offchainDSIDGeneralSchemaState.fields.metadata.update(address, {
         from: originalMetadata,
-        to: {
-          //It only allows this if networks is of string type even though the definition is circuitstring WTAF???
-          network: metadataAssertion.network.toString(),
+        to: new AccountMetadata({
+          network: metadataAssertion.network,
           metadata: metadataAssertion.metadata
-        }
+        })
       })
   }
 

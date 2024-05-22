@@ -1,14 +1,14 @@
-import { CircuitString, Field, Struct } from "o1js";
+import { CircuitString, Field, PublicKey, Struct } from "o1js";
 
-//For some reason Interfaces are not accepted it is necessary to clarify with mina
+
 const IAccountMetadata = {
-    //must be filled with something
     network: CircuitString,
-    metadata: {}
+    metadata: CircuitString
 }
 
+
 export class AccountMetadata extends Struct(IAccountMetadata) {
-    addPropertyToMetadata(key: string, value: any){
-        (this.metadata as any )[key] = value;
+    addPropertyToMetadata(parsedMetadata: CircuitString){
+        this.metadata = parsedMetadata;
     }
 }

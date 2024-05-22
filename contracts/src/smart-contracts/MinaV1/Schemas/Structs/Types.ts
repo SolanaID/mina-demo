@@ -1,3 +1,10 @@
+export enum AvailableNetworks {
+    MINA,
+    SOLANA,
+    POLYGON
+}
+
+
 export enum LinkStatus {
     NULL,
     ACTIVE,

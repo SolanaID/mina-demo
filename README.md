@@ -9,43 +9,31 @@ The current state of the repository contains two folders, the 'contracts' folder
 
 ## Contracts folder:
 
-This folder contains all the necessary code for implementing DSID's Smart contracts for the current version of the prototype
+This folder contains all the necessary code for implementing DSID's Smart contracts for the current version of the prototype, in the same fashion it contains a README file that describes the internal structure of the backend of the ZKApp
 
 ## UI folder:
 
-This folder contains all the necessary code for implementing DSID's Web Frontend for the current version of the prototype
+This folder contains all the necessary code for implementing DSID's Web app for the current version of the prototype, in the same fashion it contains a README file that describes the internal structure of the frontend of the ZKApp
 
- 
-# Useful commands for development:
+# Prerequisites for developing
 
-The following list of commands are necessary to successfully configure the development environment and verify the functionality of the project
+## Dependencies
 
-## Initial setup for the 'contracts' folder
+* NodeJS v18 and later
+* NPM v10 and later
+* [Typescript](https://www.youtube.com/watch?v=ahCwqrYpIuM&ab_channel=Fireship)
+* git v2 and later
+* Running ```npm install -g zkapp-cli``` in your terminal and then ```zk --version``` just to verify that everything runs as expected
 
-Locate yourself inside the folder 'contracts' and then run:
 
-```sh
-npm i
-```
+# Additional setup for the project
 
-## How to build
+In the general sense the project follows the guidelines found on [MINA's getting stared](https://docs.minaprotocol.com/zkapps/writing-a-zkapp/introduction-to-zkapps/getting-started-zkapps) and [MINA's offchain storage feature](https://docs.minaprotocol.com/zkapps/writing-a-zkapp/feature-overview/offchain-storage), so any kind of initial configuration for a testing and mainnet environment can be followed from there, nonetheless at this current stage the only needed configuration comes as it follows:
 
-```sh
-npm run build
-```
+* Go to each folder
+* Write in your terminal: ```npm i```
+* Check the package.json files for useful commands. E.g. In the contracts folder you could use ```npm run build``` to check overall integrity of the contract development and then you can run ```npm run test``` to check if the project is passing unit tests
 
-## How to run tests
-
-```sh
-npm run test
-npm run testw # watch mode
-```
-
-## How to run coverage
-
-```sh
-npm run coverage
-```
 
 ## License
 

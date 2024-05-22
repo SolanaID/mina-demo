@@ -12,7 +12,7 @@
  * Build the project: `$ npm run build`
  * Run with node:     `$ node build/src/interact.js <deployAlias>`.
  */
-import fs from 'fs/promises';
+/* import fs from 'fs/promises';
 import { Mina, NetworkId, PrivateKey } from 'o1js';
 import { Add } from '../smart-contracts/index';
 
@@ -110,3 +110,4 @@ function getTxnUrl(graphQlUrl: string, txnHash: string | undefined) {
   }
   return `Transaction hash: ${txnHash}`;
 }
+ */
