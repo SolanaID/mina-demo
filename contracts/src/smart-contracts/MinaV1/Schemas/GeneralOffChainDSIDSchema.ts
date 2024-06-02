@@ -1,7 +1,6 @@
 import {
     PublicKey,
-    UInt64,
-    Experimental
+    Experimental,
 } from 'o1js';
 import { AccountMetadata, AccountRewards, LinkedWeb2Accounts, LinkedWeb3Accounts, TrustedWeb3Accounts } from './Structs/index.js';
 

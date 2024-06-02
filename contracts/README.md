@@ -63,8 +63,9 @@ npm run buildw
 ## How to run tests
 
 ```sh
-npm run test
+npm run test 
 npm run testw # watch mode
+npm run test:deploy 
 ```
 
 ## How to run coverage

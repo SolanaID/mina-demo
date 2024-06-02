@@ -1,6 +1,8 @@
-import { Field, SmartContract, state, State, method, Experimental, PublicKey, UInt64, CircuitString, UInt32 } from 'o1js';
+import { Field, SmartContract, state, State, method, Experimental, PublicKey, UInt64, CircuitString, UInt32, assert, Mina } from 'o1js';
 import { offchainDSIDGeneralSchemaState, DSIDGeneralSchemaStateProof } from './Schemas/index.js';
 import { AccountMetadata } from './Schemas/Structs/AccountMetadata.js';
+import { AvailableNetworks, LinkStatus, MultiBlockchainAccountAddressString } from './Schemas/Structs/Types.js';
+import { LinkedWeb3Account } from './Schemas/Structs/LinkedWeb3Accounts.js';
 //import { offchainAccountIdentityValuesState }
 const { OffchainStateCommitments } = Experimental;
 
@@ -29,58 +31,148 @@ export class DSIDContractV1 extends SmartContract {
    *
    */
   @method
-  async createAccount(address: PublicKey, network: CircuitString) {
+  async createAccount() {
+    let address = Mina.sender()
     offchainDSIDGeneralSchemaState.fields.metadata.update(address, {
-      from: undefined,
+      from:undefined,
       to: new AccountMetadata({
-        network: network,
-        metadata: CircuitString.fromString('')
+        registrationDate: this.network.timestamp.get(),
+        score: Field(0),
+        address: MultiBlockchainAccountAddressString.fromFields(address.toFields())
       })
-    })
-
-    offchainDSIDGeneralSchemaState.fields.linkedWeb2Accounts.update(address, {
-      from: undefined,
-      to: []
-    })
-
-    offchainDSIDGeneralSchemaState.fields.linkedWeb3Accounts.update(address, {
-      from: undefined,
-      to: []
-    })
-
-    offchainDSIDGeneralSchemaState.fields.claimedRewards.update(address, {
-      from: undefined,
-      to: []
-    })
-
-    offchainDSIDGeneralSchemaState.fields.trustedAccounts.update(address, {
-      from: undefined,
-      to: []
     })
   }
 
   /**
-   * Update Account metadata callable method
+   * Update Account metadata score callable method
    * 
-   * This method updates account metadata for address in storage, first checks for account existence.
+   * This method updates account metadata score for address in storage, first checks for account existence.
    * if the address doesn't exist validation fails 
-   * Overwrites past metadata on ['key'] with 'value'
+   * Overwrites past metadata score with 'newScore' value
    *
    */
 
   @method
-  async updateAccountMetadata(address: PublicKey, parsedMetadata: CircuitString){
+  async updateAccountScore(address: PublicKey, newScore: Field){
       let originalMetadata =  await offchainDSIDGeneralSchemaState.fields.metadata.get(address);
       let metadataAssertion = originalMetadata.assertSome('Metadata for '+address+' exists');
-      metadataAssertion.addPropertyToMetadata(parsedMetadata) 
+      metadataAssertion.score.assertNotEquals(newScore)
       offchainDSIDGeneralSchemaState.fields.metadata.update(address, {
         from: originalMetadata,
-        to: new AccountMetadata({
-          network: metadataAssertion.network,
-          metadata: metadataAssertion.metadata
-        })
+        to: new AccountMetadata({...metadataAssertion, score: newScore})
       })
   }
+
+  /**
+   * Get score callable method
+   * 
+   * This method retrieves the score of the requested account
+   * PENDING: Security implementation to verify score recall from trusted source (owner account or trusted addresss)
+   * returns field of account score
+   *
+   */
+
+
+  @method.returns(Field)
+  async getScore(address: PublicKey) {
+    let accountMetadata = await offchainDSIDGeneralSchemaState.fields.metadata.get(address);
+    return (accountMetadata.assertSome('Score for account'+address+' does not exist').score)
+  }
+
+  /**
+   * Link Web3 account to identity callable method
+   * 
+   * This method inserts a new web3 account to the identity vault
+   *
+   */
+
+  @method
+  async linkWeb3AccountToIdentity(network: Field, addressToLink: MultiBlockchainAccountAddressString, signature: Field ){
+      let address = Mina.sender()
+      let originalLinkedData =  await offchainDSIDGeneralSchemaState.fields.linkedWeb3Accounts.get(address);
+      const linkedDataAssertion = originalLinkedData.assertSome('Metadata for '+address+' exists');
+      let updatedLinkedDataAssertion = linkedDataAssertion;
+      updatedLinkedDataAssertion.setLinkedAccountOfNetwork(
+        network, 
+        new LinkedWeb3Account(
+          { 
+            network,
+            address: addressToLink, 
+            signature, 
+            linkStatus: Field(LinkStatus.ACTIVE)
+         }
+        )
+      )
+      /* let updatedLinkedDataAssertion = { 
+        storage: {
+          ... linkedDataAssertion.storage, 
+          [network]: 
+          new LinkedWeb3Account({ 
+            network: Field(network), 
+            address: addressToLink, 
+            signature, 
+            linkStatus: Field(LinkStatus.ACTIVE)}
+          ) 
+        }
+      } */
+      offchainDSIDGeneralSchemaState.fields.linkedWeb3Accounts.update(address, {
+        from: linkedDataAssertion,
+        to: updatedLinkedDataAssertion
+      })
+  }
+
+
+  /**
+   * Update Account metadata score callable method
+   * 
+   * This method updates account metadata score for address in storage, first checks for account existence.
+   * if the address doesn't exist validation fails 
+   * Overwrites past metadata score with 'newScore' value
+   *
+   */
+
+  @method
+  async linkWeb2AccountToIdentity(){
+      
+  }
+
+  /**
+   * Update Account metadata score callable method
+   * 
+   * This method updates account metadata score for address in storage, first checks for account existence.
+   * if the address doesn't exist validation fails 
+   * Overwrites past metadata score with 'newScore' value
+   *
+   */
+
+  @method
+  async linkRewardHashToIdentity(){
+      
+  }
+
+  /**
+   * Update Account metadata score callable method
+   * 
+   * This method updates account metadata score for address in storage, first checks for account existence.
+   * if the address doesn't exist validation fails 
+   * Overwrites past metadata score with 'newScore' value
+   *
+   */
+
+  @method
+  async addTrustedAddress(){
+      
+  }
+
+  
+
+  /**
+   * Settle callable method 
+   * 
+   * Used for generating settlement proof of the offchain storage
+   * Actual process of settlement not yet understood
+   *
+   */
 
   @method
   async settle(proof: DSIDGeneralSchemaStateProof) {

@@ -1,9 +1,7 @@
-import { AccountUpdate, CircuitString, Field, Mina, PrivateKey, PublicKey } from 'o1js';
+import { Mina, PrivateKey } from 'o1js';
 import { DSIDContractV1 } from '../DSIDContractV1.js';
 import { offchainDSIDGeneralSchemaState } from '../Schemas/GeneralOffChainDSIDSchema.js';
-
-
-let proofsEnabled = false;
+let proofsEnabled = true;
 
 describe('DSIDContractV1 General Test', () => {
   let deployerAccount: Mina.TestPublicKey,
@@ -17,13 +15,6 @@ describe('DSIDContractV1 General Test', () => {
     zkApp: DSIDContractV1;
 
   beforeAll(async () => {
-    if (proofsEnabled) {
-        console.log("Proofs enabled before all");
-    }
-    
-  });
-
-  beforeEach(async () => {
     const Local = await Mina.LocalBlockchain({ proofsEnabled });
     Mina.setActiveInstance(Local);
     [deployerAccount, senderAccount, contractAccount, newUserAccount ] = Local.testAccounts;
@@ -33,11 +24,13 @@ describe('DSIDContractV1 General Test', () => {
     contractKey = contractAccount.key;
     newUserKey = newUserAccount.key;
 
-    //zkAppPrivateKey = PrivateKey.random();
-    //zkAppAddress = zkAppPrivateKey.toPublicKey();
     zkApp = new DSIDContractV1(contractAccount);
 
     offchainDSIDGeneralSchemaState.setContractInstance(zkApp);
+    //call directly to the storage
+    //offchainDSIDGeneralSchemaState.fields.metadata.get
+
+    //AccountUpdate.fundNewAccount(deployerAccount);
 
     console.time('offchainDSIDGeneralSchemaState compilation time');
     await offchainDSIDGeneralSchemaState.compile();
@@ -47,12 +40,13 @@ describe('DSIDContractV1 General Test', () => {
     await DSIDContractV1.compile();
     console.timeEnd('compile contract');
 
+    await localDeploy();
+    
   });
 
   async function localDeploy() {
     console.time('Local contract deploy');
     const txn = await Mina.transaction(deployerAccount, async () => {
-      AccountUpdate.fundNewAccount(deployerAccount);
       await zkApp.deploy();
     });
     await txn.prove();
@@ -61,20 +55,14 @@ describe('DSIDContractV1 General Test', () => {
     console.timeEnd('Local contract deploy');
   }
 
-  it('generates and deploys the `DSIDContractV1` smart contract', async () => {
-    await localDeploy();
-    const deployedAddress = zkApp.address;
-    expect(deployedAddress).toEqual(contractAccount);
-  });
-
   it('correctly creates a new account after calling the create method from the smart contract', async () => {
-    await localDeploy();
+    
     console.time('Account creation');
-    const txn = await Mina.transaction(senderAccount, async () => {
-      await zkApp.createAccount(newUserAccount, CircuitString.fromString('polygon'));
+    const txn = await Mina.transaction(newUserAccount, async () => {
+      await zkApp.createAccount();
     });
     await txn.prove();
-    await txn.sign([senderKey]).send();
+    await txn.sign([newUserKey]).send();
     console.log("TXN after signature", txn)
     console.timeEnd('Account creation');
 

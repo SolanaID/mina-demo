@@ -20,7 +20,8 @@
     "format": "prettier --write --ignore-unknown **/*",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
-    "lint": "npx eslint src/* --fix"
+    "lint": "npx eslint src/* --fix",
+    "test:deploy":"node --experimental-vm-modules node_modules/jest/bin/jest.js -- Deployment.test.ts"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
@@ -36,7 +37,7 @@
     "typescript": "^5.1"
   },
   "peerDependencies": {
-    "o1js": "1.*"
+    "o1js": "^1.3.0"
   },
   "engines": {
     "node": ">=18.14.0"

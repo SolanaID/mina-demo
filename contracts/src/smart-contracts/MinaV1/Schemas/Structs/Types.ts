@@ -1,9 +1,10 @@
+import { MultiPackedStringFactory } from "../../../../o1js-pack";
+
 export enum AvailableNetworks {
     MINA,
-    SOLANA,
-    POLYGON
+    SOLANA, 
+    POLYGON,
 }
-
 
 export enum LinkStatus {
     NULL,
@@ -22,3 +23,8 @@ export enum ClaimStatus {
     CLAIMED,
     UNCLAIMED,
 }
+
+// Allows for a maximum of 45 chars
+export class MultiBlockchainAccountAddressString extends MultiPackedStringFactory(3) {}
+// Allows for a maximum of 75 chars
+export class MultiBlockchainTxHashString extends MultiPackedStringFactory(5) {}
